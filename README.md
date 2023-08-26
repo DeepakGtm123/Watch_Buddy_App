@@ -1,16 +1,22 @@
 # watch_buddy
 
-A new Flutter project.
+An mobile app for watching videos together.
 
-## Getting Started
+## Description
 
-This project is a starting point for a Flutter application.
+- Synchronizes the video being watched with the current room
+- Plays, pauses, and seeks are synced to all watchers
+- Supports:
+    - Screen sharing (full screen, browser tab or application)
+    - Stream-your-own-file
+    - Video files on the Internet (anything accessible via HTTP)
+    - YouTube videos
+    - Text chat
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Technologies
+- Dart
+- C++
+- HTML
+- C
