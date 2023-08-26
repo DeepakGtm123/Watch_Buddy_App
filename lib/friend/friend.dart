@@ -65,6 +65,5 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-void main() {
-  runApp(MyApp());
+RaisedButton({required Null Function() onPressed, required Text child}) {
 }

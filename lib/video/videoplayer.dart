@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video/video_player.dart';
 
 void main() {
   runApp(VideoPlayerApp());
@@ -26,14 +26,18 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   VideoPlayerController _controller;
   TextEditingController _urlController = TextEditingController();
-  bool _isLocalVideo = true;
+  bool _isVideoFromDevice = true;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('videos/sample_video.mp4')
+    _controller = VideoPlayerController.asset('assets/sample_video.mp4') 
+    //Make sure to replace 'assets/sample_video.mp4' with the path to your 
+    //video file in your Flutter project.
+      ..addListener(() => setState(() {}))
       ..initialize().then((_) {
-        setState(() {});
+        _controller.play();
+        _controller.setLooping(true);
       });
   }
 
@@ -43,35 +47,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.dispose();
   }
 
-  Widget buildPlayer() {
-    if (_controller != null && _controller.value.initialized) {
-      return AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: VideoPlayer(_controller),
-      );
-    } else {
-      return CircularProgressIndicator();
-    }
-  }
-
-  void loadVideoFromDevice() {
-    _controller = VideoPlayerController.asset('videos/sample_video.mp4')
-      ..initialize().then((_) {
-        setState(() {});
-      });
+  Future<void> _playVideoFromDevice() async {
+    final videoFile = await ImagePicker.pickVideo(source: ImageSource.gallery);
+    if (videoFile == null) return;
+    final videoController = VideoPlayerController.file(videoFile);
+    await videoController.initialize();
     setState(() {
-      _isLocalVideo = true;
+      _controller = videoController;
+      _isVideoFromDevice = true;
     });
+    _controller.play();
   }
 
-  void loadVideoFromUrl() {
-    String url = _urlController.text;
-    _controller = VideoPlayerController.network(url)
-      ..initialize().then((_) {
-        setState(() {});
+  void _playVideoFromUrl() {
+    final url = _urlController.text;
+    if (url.isEmpty) return;
+    final videoController = VideoPlayerController.network(url);
+    videoController.initialize().then((_) {
+      setState(() {
+        _controller = videoController;
+        _isVideoFromDevice = false;
       });
-    setState(() {
-      _isLocalVideo = false;
+      _controller.play();
     });
   }
 
@@ -80,64 +77,91 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Video Player'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              // Code for screen sharing
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            buildPlayer(),
-            SizedBox(height: 20.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  child: Text('Load from Device'),
-                  onPressed: loadVideoFromDevice,
+        child: _controller.value.initialized
+            ? AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              )
+            : CircularProgressIndicator(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Choose Video Source'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Radio(
+                          value: true,
+                          groupValue: _isVideoFromDevice,
+                          onChanged: (value) {
+                            setState(() {
+                              _isVideoFromDevice = value;
+                            });
+                          },
+                        ),
+                        Text('From Device'),
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Radio(
+                          value: false,
+                          groupValue: _isVideoFromDevice,
+                          onChanged: (value) {
+                            setState(() {
+                              _isVideoFromDevice = value;
+                            });
+                          },
+                        ),
+                        Text('From URL'),
+                      ],
+                    ),
+                    if (!_isVideoFromDevice)
+                      TextField(
+                        controller: _urlController,
+                      ),
+                  ],
                 ),
-                SizedBox(width: 20.0),
-                RaisedButton(
-                  child: Text('Load from URL'),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Load Video from URL'),
-                          content: TextField(
-                            controller: _urlController,
-                            decoration: InputDecoration(
-                              labelText: 'Enter URL',
-                            ),
-                          ),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            FlatButton(
-                              child: Text('Load'),
-                              onPressed: () {
-                                loadVideoFromUrl();
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              _isLocalVideo ? 'Loaded from Device' : 'Loaded from URL',
-              style: TextStyle(fontSize: 16.0),
-            ),
-          ],
-        ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  FlatButton(
+                    child: Text('Play'),
+                    onPressed: (){
+                      Navigator.of(context).pop();
+                      if (_isVideoFromDevice) {
+                        _playVideoFromDevice();
+                      } else {
+                        _playVideoFromUrl();
+                      }
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Icon(Icons.play_arrow),
       ),
     );
   }
