@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-// import 'package: chat/ChatMessageListen.dart';
-// import 'package: chat/ChatScreen.dart';
-// import 'package: friend/friend.dart';
-// import 'package: home/home.dart';
-// import 'package: login/global.dart';
-// import 'package: login/login.dart';
-// import 'package: login/signup.dart';
-// import 'package: video/videoplayer.dart';
 
+//importing other files in main.dart file
+import 'chat/ChatMessageListen.dart';
+import 'chat/ChatScreen.dart';
+import 'friend/friend.dart';
+import 'home/home.dart';
+import 'login/global.dart';
+import 'login/signup.dart';
+import 'video/videoplayer.dart';
 
 void main() {
   runApp(WatchBuddy());
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_add, color: Colors.blue),
-            label: 'Signup',
+            label: 'SignUp',
           ),
         ],
         currentIndex: _selectedIndex,
