@@ -7,16 +7,16 @@ class ChatMessageListItem extends StatelessWidget {
   final DataSnapshot messageSnapshot;
   final Animation animation;
 
-  ChatMessageListItem({this.messageSnapshot, this.animation});
+  const ChatMessageListItem({super.key, this.messageSnapshot, this.animation});
 
   @override
   Widget build(BuildContext context) {
-    return new SizeTransition(
+    return SizeTransition(
       sizeFactor:
-      new CurvedAnimation(parent: animation, curve: Curves.decelerate),
-      child: new Container(
+      CurvedAnimation(parent: animation, curve: Curves.decelerate),
+      child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
-        child: new Row(
+        child: Row(
           children: currentUserEmail == messageSnapshot.value['email']
               ? getSentMessageLayout()
               : getReceivedMessageLayout(),
@@ -27,35 +27,35 @@ class ChatMessageListItem extends StatelessWidget {
 
   List<Widget> getSentMessageLayout() {
     return <Widget>[
-      new Expanded(
-        child: new Column(
+      Expanded(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            new Text(messageSnapshot.value['senderName'],
-                style: new TextStyle(
+            Text(messageSnapshot.value['senderName'],
+                style: const TextStyle(
                     fontSize: 14.0,
                     color: Colors.black,
                     fontWeight: FontWeight.bold)),
-            new Container(
+            Container(
               margin: const EdgeInsets.only(top: 5.0),
               child: messageSnapshot.value['imageUrl'] != null
-                  ? new Image.network(
+                  ? Image.network(
                 messageSnapshot.value['imageUrl'],
                 width: 250.0,
               )
-                  : new Text(messageSnapshot.value['text']),
+                  : Text(messageSnapshot.value['text']),
             ),
           ],
         ),
       ),
-      new Column(
+      Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          new Container(
+          Container(
               margin: const EdgeInsets.only(left: 8.0),
-              child: new CircleAvatar(
+              child: CircleAvatar(
                 backgroundImage:
-                new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+                NetworkImage(messageSnapshot.value['senderPhotoUrl']),
               )),
         ],
       ),
@@ -64,34 +64,34 @@ class ChatMessageListItem extends StatelessWidget {
 
   List<Widget> getReceivedMessageLayout() {
     return <Widget>[
-      new Column(
+      Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Container(
+          Container(
               margin: const EdgeInsets.only(right: 8.0),
-              child: new CircleAvatar(
+              child: CircleAvatar(
                 backgroundImage:
-                new NetworkImage(messageSnapshot.value['senderPhotoUrl']),
+                NetworkImage(messageSnapshot.value['senderPhotoUrl']),
               )),
         ],
       ),
-      new Expanded(
-        child: new Column(
+      Expanded(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(messageSnapshot.value['senderName'],
-                style: new TextStyle(
+            Text(messageSnapshot.value['senderName'],
+                style: const TextStyle(
                     fontSize: 14.0,
                     color: Colors.black,
                     fontWeight: FontWeight.bold)),
-            new Container(
+            Container(
               margin: const EdgeInsets.only(top: 5.0),
               child: messageSnapshot.value['imageUrl'] != null
-                  ? new Image.network(
+                  ? Image.network(
                 messageSnapshot.value['imageUrl'],
                 width: 250.0,
               )
-                  : new Text(messageSnapshot.value['text']),
+                  : Text(messageSnapshot.value['text']),
             ),
           ],
         ),

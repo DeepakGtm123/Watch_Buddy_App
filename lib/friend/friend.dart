@@ -8,6 +8,8 @@ class Friend {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -28,24 +30,24 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Friend List'),
+          title: const Text('Friend List'),
         ),
         body: Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               RaisedButton(
                 onPressed: () {
                   // Logic to invite friends goes here
                 },
-                child: Text('Invite Friends'),
+                child: const Text('Invite Friends'),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Friends joined with me:',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
                   itemCount: friends.length,

@@ -1,13 +1,22 @@
-import 'package:chat/global.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:watch_buddy/login/signup.dart';
+// import './global.dart';
 
 class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  get backgroundColor => null;
+  
+  get cardColor => null;
+  
+  get buttonColor => null;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroudColor,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -15,7 +24,7 @@ class LoginScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
                       child: Lottie.network(
                           'https://assets2.lottiefiles.com/packages/lf20_mjlh3hcy.json')),
@@ -104,7 +113,7 @@ class LoginScreen extends StatelessWidget {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  SignupScreen()));
+                                                  const SignupScreen()));
                                     })
                             ]),
                       ),
@@ -122,9 +131,9 @@ class LoginScreen extends StatelessWidget {
                           },
                           textColor: Colors.white,
                           color: buttonColor,
-                          padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           child: Padding(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -161,4 +170,10 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+RaisedButton({required RoundedRectangleBorder shape, required Null Function() onPressed, required Color textColor, required color, required EdgeInsets padding, required Padding child}) {
+}
+
+FlatButton({required Null Function() onPressed, required Text child}) {
 }

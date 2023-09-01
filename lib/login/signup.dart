@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -5,10 +6,12 @@ import 'package:lottie/lottie.dart';
 import './global.dart';
 
 class SignupScreen extends StatelessWidget {
+  const SignupScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroudColor,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -16,7 +19,7 @@ class SignupScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
                       child: Lottie.network(
                           'https://assets10.lottiefiles.com/packages/lf20_wd1udlcz.json')),
@@ -140,13 +143,15 @@ class SignupScreen extends StatelessWidget {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10.0))),
                           onPressed: () {
-                            print('Button Clicked.');
+                            if (kDebugMode) {
+                              print('Button Clicked.');
+                            }
                           },
                           textColor: Colors.white,
                           color: buttonColor,
-                          padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                          padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                           child: Padding(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -183,4 +188,7 @@ class SignupScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+RaisedButton({required RoundedRectangleBorder shape, required Null Function() onPressed, required Color textColor, required MaterialColor color, required EdgeInsets padding, required Padding child}) {
 }

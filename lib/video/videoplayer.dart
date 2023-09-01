@@ -1,44 +1,48 @@
-import 'package:flutter/material.dart';
-import 'package:video/video_player.dart';
+import 'dart:io';
 
-void main() {
-  runApp(VideoPlayerApp());
-}
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
+void main() => runApp(const VideoPlayerApp());
 
 class VideoPlayerApp extends StatelessWidget {
+  const VideoPlayerApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Video Player',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: VideoPlayerScreen(),
     );
   }
 }
 
 class VideoPlayerScreen extends StatefulWidget {
+  const VideoPlayerScreen({super.key});
+
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  VideoPlayerController _controller;
-  TextEditingController _urlController = TextEditingController();
-  bool _isVideoFromDevice = true;
+  late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
+  late File _videoFile;
+  late String _videoUrl;
+  bool _isSharingScreen = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/sample_video.mp4') 
-    //Make sure to replace 'assets/sample_video.mp4' with the path to your 
-    //video file in your Flutter project.
-      ..addListener(() => setState(() {}))
-      ..initialize().then((_) {
-        _controller.play();
-        _controller.setLooping(true);
-      });
+    _controller = VideoPlayerController.asset('assets/sample_video.mp4');
+    _initializeVideoPlayerFuture = _controller.initialize();
+
+    _controller.addListener(() {
+      if (_controller.value.isPlaying && !_isSharingScreen) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -47,28 +51,30 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.dispose();
   }
 
-  Future<void> _playVideoFromDevice() async {
-    final videoFile = await ImagePicker.pickVideo(source: ImageSource.gallery);
-    if (videoFile == null) return;
-    final videoController = VideoPlayerController.file(videoFile);
-    await videoController.initialize();
-    setState(() {
-      _controller = videoController;
-      _isVideoFromDevice = true;
-    });
-    _controller.play();
+  Future<void> chooseVideo() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.video,
+    );
+
+    _videoFile = File(result!.files.single.path);
+    _controller = VideoPlayerController.file(_videoFile);
+    _initializeVideoPlayerFuture = _controller.initialize();
+    
+    setState(() {});
   }
 
-  void _playVideoFromUrl() {
-    final url = _urlController.text;
-    if (url.isEmpty) return;
-    final videoController = VideoPlayerController.network(url);
-    videoController.initialize().then((_) {
-      setState(() {
-        _controller = videoController;
-        _isVideoFromDevice = false;
-      });
-      _controller.play();
+  Future<void> searchVideo(String url) async {
+    _videoUrl = url;
+    // ignore: deprecated_member_use
+    _controller = VideoPlayerController.network(_videoUrl);
+    _initializeVideoPlayerFuture = _controller.initialize();
+    
+    setState(() {});
+  }
+
+  Future<void> shareScreenWithFriends() async {
+    setState(() {
+      _isSharingScreen = !_isSharingScreen;
     });
   }
 
@@ -76,92 +82,54 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Video Player'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () {
-              // Code for screen sharing
-            },
+        title: const Text('Video Player'),
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 250,
+            child: FutureBuilder(
+              future: _initializeVideoPlayerFuture,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: chooseVideo,
+            child: const Text('Choose Video'),
+          ),
+          ElevatedButton(
+            onPressed: () => searchVideo(_videoUrl),
+            child: const Text('Search Video'),
+          ),
+          ElevatedButton(
+            onPressed: shareScreenWithFriends,
+            child: Text(_isSharingScreen ? 'Stop Sharing' : 'Share Screen'),
           ),
         ],
       ),
-      body: Center(
-        child: _controller.value.initialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : CircularProgressIndicator(),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Choose Video Source'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Radio(
-                          value: true,
-                          groupValue: _isVideoFromDevice,
-                          onChanged: (value) {
-                            setState(() {
-                              _isVideoFromDevice = value;
-                            });
-                          },
-                        ),
-                        Text('From Device'),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Radio(
-                          value: false,
-                          groupValue: _isVideoFromDevice,
-                          onChanged: (value) {
-                            setState(() {
-                              _isVideoFromDevice = value;
-                            });
-                          },
-                        ),
-                        Text('From URL'),
-                      ],
-                    ),
-                    if (!_isVideoFromDevice)
-                      TextField(
-                        controller: _urlController,
-                      ),
-                  ],
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Cancel'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  FlatButton(
-                    child: Text('Play'),
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                      if (_isVideoFromDevice) {
-                        _playVideoFromDevice();
-                      } else {
-                        _playVideoFromUrl();
-                      }
-                    },
-                  ),
-                ],
-              );
-            },
-          );
+          setState(() {
+            if (_controller.value.isPlaying) {
+              _controller.pause();
+            } else {
+              _controller.play();
+            }
+          });
         },
-        child: Icon(Icons.play_arrow),
+        child: Icon(
+          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+        ),
       ),
     );
   }

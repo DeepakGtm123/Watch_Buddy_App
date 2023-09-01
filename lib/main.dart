@@ -6,14 +6,17 @@ import 'chat/ChatScreen.dart';
 import 'friend/friend.dart';
 import 'home/home.dart';
 import 'login/global.dart';
+import 'login/login.dart';
 import 'login/signup.dart';
 import 'video/videoplayer.dart';
 
 void main() {
-  runApp(WatchBuddy());
+  runApp(const WatchBuddy());
 }
 
 class WatchBuddy extends StatelessWidget {
+  const WatchBuddy({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,12 +24,14 @@ class WatchBuddy extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -34,12 +39,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static List<Widget> _pageOptions = <Widget>[
-    Text('Home Page'),
-    Text('Friends Page'),
-    Text('Play Video Page'),
-    Text('Chat Page'),
-    Text('Signup Page'),
+  static final List<Widget> _pageOptions = <Widget>[
+    const Text('Home Page'),
+    const Text('Friends Page'),
+    const Text('Play Video Page'),
+    const Text('Chat Page'),
+    const Text('Signup Page'),
   ];
 
   void _onItemTapped(int index) {
@@ -52,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('WATCH BUDDY'),
+        title: const Text('WATCH BUDDY'),
       ),
       body: Center(
         child: _pageOptions.elementAt(_selectedIndex),
